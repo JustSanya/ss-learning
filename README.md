@@ -1,3 +1,7 @@
-# ss-learning
+# How to
 
-Just run npm start to get started
+Use following to get started
+
+```
+npm start
+```
