@@ -5,6 +5,8 @@ enum GateState {
   OPENING,
 }
 
+const messages = ["Closed", "Closing...", "Opened", "Opening...", "Paused"];
+
 const DEFAULT_TIMEOUT = 10000;
 const DEFAULT_STEP = 1000;
 
@@ -13,6 +15,12 @@ const countdown = document.getElementById("countdown") as HTMLParagraphElement;
 const toggle = document.getElementById("toggle") as HTMLButtonElement;
 
 class Gateway {
+  constructor() {
+    this.open = this.open.bind(this);
+    this.close = this.close.bind(this);
+    this.finishClosing = this.finishClosing.bind(this);
+    this.finishOpening = this.finishOpening.bind(this);
+  }
   private state: GateState = GateState.CLOSED;
   private remaining: number = DEFAULT_TIMEOUT;
   private interval: number | undefined = undefined;
@@ -26,58 +34,37 @@ class Gateway {
         this.close();
         break;
       case GateState.OPENING:
-        if (this.interval) {
-          this.stop();
-        } else {
-          this.remaining = DEFAULT_TIMEOUT - this.remaining;
-          this.close();
-        }
+        this.handlePendingState(this.close);
         break;
       case GateState.CLOSING:
-        if (this.interval) {
-          this.stop();
-        } else {
-          this.remaining = DEFAULT_TIMEOUT - this.remaining;
-          this.open();
-        }
+        this.handlePendingState(this.open);
         break;
     }
   }
 
-  open() {
-    this.state = GateState.OPENING;
-    gateStatus.textContent = "Opening....";
-
-    this.interval = window.setInterval(() => {
-      if (this.remaining > 0) {
-        this.remaining -= DEFAULT_STEP;
-        countdown.textContent = this.remaining.toString();
-      } else {
-        this.state = GateState.OPENED;
-        gateStatus.textContent = "Opened";
-        this.remaining = DEFAULT_TIMEOUT;
-        window.clearInterval(this.interval);
-        countdown.textContent = this.remaining.toString();
-      }
-    }, DEFAULT_STEP);
+  open(): void {
+    this.setState(GateState.OPENING);
+    this.initializeTimer(this.finishOpening);
   }
 
-  close() {
-    this.state = GateState.CLOSING;
-    gateStatus.textContent = "Closing...";
+  close(): void {
+    this.setState(GateState.CLOSING);
+    this.initializeTimer(this.finishClosing);
+  }
 
-    this.interval = window.setInterval(() => {
-      if (this.remaining > 0) {
-        this.remaining -= DEFAULT_STEP;
-        countdown.textContent = this.remaining.toString();
-      } else {
-        this.state = GateState.CLOSED;
-        gateStatus.textContent = "Closed";
-        window.clearInterval(this.interval);
-        this.remaining = DEFAULT_TIMEOUT;
-        countdown.textContent = this.remaining.toString();
-      }
-    }, DEFAULT_STEP);
+  finishOpening() {
+    this.setState(GateState.OPENED);
+    this.resetTimer();
+  }
+
+  finishClosing() {
+    this.setState(GateState.CLOSED);
+    this.resetTimer();
+  }
+
+  proceed() {
+    this.remaining -= DEFAULT_STEP;
+    countdown.textContent = this.remaining.toString();
   }
 
   stop() {
@@ -85,11 +72,37 @@ class Gateway {
     window.clearInterval(this.interval);
     this.interval = undefined;
   }
+
+  initializeTimer(callback: Function) {
+    this.interval = window.setInterval(() => {
+      if (this.remaining > 0) {
+        this.proceed();
+      } else {
+        callback();
+      }
+    }, DEFAULT_STEP);
+  }
+
+  resetTimer() {
+    this.remaining = DEFAULT_TIMEOUT;
+    window.clearInterval(this.interval);
+    countdown.textContent = this.remaining.toString();
+  }
+
+  setState(state: number): void {
+    this.state = state;
+    gateStatus.textContent = messages[state] ?? "";
+  }
+
+  handlePendingState(callback: Function) {
+    if (this.interval) {
+      this.stop();
+    } else {
+      this.remaining = DEFAULT_TIMEOUT - this.remaining;
+      callback();
+    }
+  }
 }
-
-class GatewayReceiver {}
-
-class GatewaySwitcher {}
 
 const gateWay = new Gateway();
 
