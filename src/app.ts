@@ -26,7 +26,7 @@ class Gateway {
   private remaining: number = DEFAULT_TIMEOUT;
   private interval: number | undefined = undefined;
 
-  toggle() {
+  toggle(): void {
     switch (this.state) {
       case GateState.CLOSED:
         this.open();
@@ -53,28 +53,28 @@ class Gateway {
     this.initializeTimer(this.finishClosing);
   }
 
-  finishOpening() {
+  finishOpening(): void {
     this.setState(GateState.OPENED);
     this.resetTimer();
   }
 
-  finishClosing() {
+  finishClosing(): void {
     this.setState(GateState.CLOSED);
     this.resetTimer();
   }
 
-  proceed() {
+  proceed(): void {
     this.remaining -= DEFAULT_STEP;
     countdown.textContent = this.remaining.toString();
   }
 
-  stop() {
+  stop(): void {
     gateStatus.textContent = "Pause";
     window.clearInterval(this.interval);
     this.interval = undefined;
   }
 
-  initializeTimer(callback: Function) {
+  initializeTimer(callback: Function): void {
     this.interval = window.setInterval(() => {
       if (this.remaining > 0) {
         this.proceed();
@@ -84,7 +84,7 @@ class Gateway {
     }, DEFAULT_STEP);
   }
 
-  resetTimer() {
+  resetTimer(): void {
     this.remaining = DEFAULT_TIMEOUT;
     window.clearInterval(this.interval);
     countdown.textContent = this.remaining.toString();
