@@ -21,6 +21,7 @@ class Gateway {
     this.finishClosing = this.finishClosing.bind(this);
     this.finishOpening = this.finishOpening.bind(this);
   }
+
   private state: GateState = GateState.CLOSED;
   private remaining: number = DEFAULT_TIMEOUT;
   private interval: number | undefined = undefined;
