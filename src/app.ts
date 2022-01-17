@@ -41,7 +41,7 @@ class Gate {
     this.finishAction = this.finishAction.bind(this);
   }
 
-  currentState: GateState = GateState.CLOSED;
+  public currentState: GateState = GateState.CLOSED;
   private timer = new Timer();
   private cachedState: GateState | null = null;
 
@@ -82,7 +82,7 @@ class Timer {
   private DEFAULT_MS_TIMEOUT = 10000;
   private DEFAULT_MS_STEP = 1000;
 
-  interval: number | undefined = undefined;
+  public interval: number | undefined = undefined;
   private remaining: number = this.DEFAULT_MS_TIMEOUT;
 
   initialize(callback: Function, state: GateState): void {
