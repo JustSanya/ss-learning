@@ -140,17 +140,4 @@ class ClosedGate extends GateState {
   }
 }
 
-const gate = new GateContext(new ClosedGate());
-
-gate.toggle();
-window.setTimeout(() => {
-  gate.toggle();
-}, 3000);
-
-window.setTimeout(() => {
-  gate.toggle();
-}, 5000);
-
-window.setTimeout(() => {
-  gate.toggle();
-}, 10000);
+(window as any).gate = new GateContext(new ClosedGate());
