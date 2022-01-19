@@ -1,3 +1,4 @@
+import { Subject, Observer } from "./types";
 class Timer {
   private DEFAULT_MS_TIMEOUT = 10000;
   private DEFAULT_MS_STEP = 1000;
@@ -77,6 +78,10 @@ class GateContext {
       this.timer?.reset();
     }
   }
+
+  public openEmergency() {
+    this.state?.openEmergency();
+  }
 }
 
 abstract class GateState {
@@ -92,6 +97,9 @@ abstract class GateState {
   }
 
   public abstract toggle(): void;
+  public openEmergency(): void {
+    console.warn("Gate is not closing right now...");
+  }
 }
 
 class OpenedGate extends GateState {
@@ -130,6 +138,12 @@ class ClosingGate extends GateState {
     this.timer?.pause();
     this.context?.transitionTo(new PausedGate());
   }
+
+  public openEmergency(): void {
+    this.timer?.pause();
+    this.timer?.reverse();
+    this.context?.transitionTo(new OpeningGate());
+  }
 }
 
 class ClosedGate extends GateState {
@@ -140,4 +154,55 @@ class ClosedGate extends GateState {
   }
 }
 
+class GateSensor implements Subject {
+  public isCarDetected: Boolean = false;
+
+  private observers: Observer[] = [];
+
+  public attach(observer: Observer): void {
+    const isExist = this.observers.includes(observer);
+    if (isExist) {
+      return console.warn("Subject: Observer has been attached already.");
+    }
+    this.observers.push(observer);
+  }
+
+  public detach(observer: Observer): void {
+    const observerIndex = this.observers.indexOf(observer);
+    if (observerIndex === -1) {
+      return console.log("Subject: Nonexistent observer.");
+    }
+
+    this.observers.splice(observerIndex, 1);
+  }
+
+  public notify(): void {
+    for (const observer of this.observers) {
+      observer.update(this);
+    }
+  }
+
+  public carArrived(): void {
+    this.isCarDetected = true;
+    this.notify();
+  }
+}
+
+class GateSensorObserver implements Observer {
+  protected context: GateContext;
+
+  constructor(context: GateContext) {
+    this.context = context;
+  }
+
+  public update(sensor: GateSensor): void {
+    if (sensor.isCarDetected) {
+      this.context.openEmergency();
+    }
+  }
+}
+
 (window as any).gate = new GateContext(new ClosedGate());
+(window as any).sensor = new GateSensor();
+
+(window as any).sensor.attach(new GateSensorObserver((window as any).gate));
