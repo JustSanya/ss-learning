@@ -1,14 +1,16 @@
 import { Subject, Observer } from "./types";
 class Timer {
-  private DEFAULT_MS_TIMEOUT = 10000;
   private DEFAULT_MS_STEP = 1000;
   protected context: GateContext | undefined;
 
   public interval: number | undefined = undefined;
-  private remaining: number = this.DEFAULT_MS_TIMEOUT;
+  private remaining: number;
+  private intervalTimeOut: number;
 
-  constructor(context: GateContext) {
+  constructor(context: GateContext, intervalTimeOut: number) {
     this.context = context;
+    this.intervalTimeOut = intervalTimeOut;
+    this.remaining = this.intervalTimeOut;
   }
 
   initialize(): void {
@@ -23,12 +25,12 @@ class Timer {
   }
 
   reset(): void {
-    this.remaining = this.DEFAULT_MS_TIMEOUT;
+    this.remaining = this.intervalTimeOut;
     window.clearInterval(this.interval);
   }
 
   reverse() {
-    this.remaining = this.DEFAULT_MS_TIMEOUT - this.remaining;
+    this.remaining = this.intervalTimeOut - this.remaining;
     this.initialize();
   }
 
@@ -36,16 +38,50 @@ class Timer {
     window.clearInterval(this.interval);
     this.interval = undefined;
   }
+
+  configureInterval(intervalTimeOut: number) {
+    this.intervalTimeOut = intervalTimeOut;
+    this.remaining = intervalTimeOut;
+  }
 }
 
 class GateContext {
-  private state: GateState | undefined;
   public timer: Timer | undefined;
   public cachedDirection: "opening" | "closing" | null = null;
+  
+  private DEFAULT_MS_TIMEOUT = 10000;
+  private DEFAULT_MS_AUTOCLOSED = 10000;
+  private _autoCloseTimeout: number;
+  private _duration: number;
+  private state: GateState | undefined;
 
   constructor(state: GateState) {
     this.transitionTo(state);
-    this.timer = new Timer(this);
+    this._duration = this.DEFAULT_MS_TIMEOUT;
+    this._autoCloseTimeout = this.DEFAULT_MS_AUTOCLOSED;
+    this.timer = new Timer(this, this._duration);
+  }
+
+  public set autoCloseTimeout(autoCloseTimeout: number) {
+    this._autoCloseTimeout = autoCloseTimeout;
+  }
+
+  public get autoCloseTimeout() {
+    return this._autoCloseTimeout;
+  }
+
+  public set duration(duration: number) {
+    this._duration = duration;
+    this.timer?.configureInterval(this._duration);
+  }
+
+  public get duration() {
+    return this._duration;
+  }
+
+  public configureDuration(duration: number) {
+    this._duration = duration;
+    this.timer?.configureInterval(this._duration);
   }
 
   public transitionTo(state: GateState): void {
@@ -90,10 +126,15 @@ abstract class GateState {
 
   public setContext(context: GateContext) {
     this.context = context;
+    this.initialize();
   }
 
   public connectTimer(timer: Timer | undefined) {
     this.timer = timer;
+  }
+
+  protected initialize() {
+
   }
 
   public abstract toggle(): void;
@@ -103,8 +144,16 @@ abstract class GateState {
 }
 
 class OpenedGate extends GateState {
+  private autoCloseTimer: number | undefined;
+
+  protected initialize(): void {
+    console.log(`Gate closing in ${this.context?.autoCloseTimeout}`);
+    this.autoCloseTimer = window.setTimeout(() => this.toggle(), this.context?.autoCloseTimeout);
+  }
+
   public toggle(): void {
     console.log("start closing gates");
+    window.clearTimeout(this.autoCloseTimer);
     this.context?.transitionTo(new ClosingGate());
     this.context?.timer?.initialize();
   }
