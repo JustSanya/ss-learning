@@ -1,25 +1,23 @@
 import { Subject, Observer } from "./types";
 class Timer {
   private DEFAULT_MS_STEP = 1000;
-  protected context: GateContext | undefined;
 
   public interval: number | undefined = undefined;
   private remaining: number;
   private intervalTimeOut: number;
 
-  constructor(context: GateContext, intervalTimeOut: number) {
-    this.context = context;
+  constructor(intervalTimeOut: number) {
     this.intervalTimeOut = intervalTimeOut;
     this.remaining = this.intervalTimeOut;
   }
 
-  initialize(): void {
+  initialize(callback: Function): void {
     this.interval = window.setInterval(() => {
       if (this.remaining > 0) {
         this.remaining -= this.DEFAULT_MS_STEP;
         console.log(`Time remaining: ${this.remaining}`);
       } else {
-        this.context?.finishAction();
+        callback();
       }
     }, this.DEFAULT_MS_STEP);
   }
@@ -31,7 +29,6 @@ class Timer {
 
   reverse() {
     this.remaining = this.intervalTimeOut - this.remaining;
-    this.initialize();
   }
 
   pause() {
@@ -45,21 +42,21 @@ class Timer {
   }
 }
 
-class GateContext {
+class Gate {
   public timer: Timer | undefined;
-  public cachedDirection: "opening" | "closing" | null = null;
-  
+
   private DEFAULT_MS_TIMEOUT = 10000;
   private DEFAULT_MS_AUTOCLOSED = 10000;
   private _autoCloseTimeout: number;
   private _duration: number;
+  private _blocked: boolean = false;
   private state: GateState | undefined;
 
   constructor(state: GateState) {
     this.transitionTo(state);
     this._duration = this.DEFAULT_MS_TIMEOUT;
     this._autoCloseTimeout = this.DEFAULT_MS_AUTOCLOSED;
-    this.timer = new Timer(this, this._duration);
+    this.timer = new Timer(this._duration);
   }
 
   public set autoCloseTimeout(autoCloseTimeout: number) {
@@ -79,53 +76,46 @@ class GateContext {
     return this._duration;
   }
 
+  public get blocked() {
+    return this._blocked;
+  }
+
+  public set blocked(value) {
+    this._blocked = value;
+    if (value && this.state instanceof ClosingGate) {
+      this.transitionTo(new BlockedOpeningGate());
+    }
+  }
+
   public configureDuration(duration: number) {
     this._duration = duration;
     this.timer?.configureInterval(this._duration);
   }
 
   public transitionTo(state: GateState): void {
-    console.log(`Context: Transition to ${(<any>state).constructor.name}.`);
+    console.log(
+      `<------ Transition to ${(<any>state).constructor.name}. ------>`
+    );
     this.state = state;
-    this.state?.setContext(this);
+    this.state?.setgate(this);
     this.state?.connectTimer(this.timer);
-
-    if (state instanceof OpeningGate) {
-      this.cachedDirection = "opening";
-    } else if (state instanceof ClosingGate) {
-      this.cachedDirection = "closing";
-    } else if (!(state instanceof PausedGate)) {
-      this.cachedDirection = null;
-    }
   }
 
   public toggle(): void {
     this.state?.toggle();
   }
 
-  public finishAction(): void {
-    if (this.cachedDirection === "opening") {
-      this.transitionTo(new OpenedGate());
-      console.log("Gate opened");
-      this.timer?.reset();
-    } else if (this.cachedDirection === "closing") {
-      this.transitionTo(new ClosedGate());
-      console.log("Gate closed");
-      this.timer?.reset();
-    }
-  }
-
-  public openEmergency() {
-    this.state?.openEmergency();
+  public openImmediately() {
+    this.state?.openImmediately();
   }
 }
 
 abstract class GateState {
-  protected context: GateContext | undefined;
+  protected gate: Gate | undefined;
   protected timer: Timer | undefined;
 
-  public setContext(context: GateContext) {
-    this.context = context;
+  public setgate(gate: Gate) {
+    this.gate = gate;
     this.initialize();
   }
 
@@ -133,12 +123,10 @@ abstract class GateState {
     this.timer = timer;
   }
 
-  protected initialize() {
-
-  }
+  protected initialize() {}
 
   public abstract toggle(): void;
-  public openEmergency(): void {
+  public openImmediately(): void {
     console.warn("Gate is not closing right now...");
   }
 }
@@ -147,64 +135,108 @@ class OpenedGate extends GateState {
   private autoCloseTimer: number | undefined;
 
   protected initialize(): void {
-    console.log(`Gate closing in ${this.context?.autoCloseTimeout}`);
-    this.autoCloseTimer = window.setTimeout(() => this.toggle(), this.context?.autoCloseTimeout);
+    console.log(`Gate closing in ${this.gate?.autoCloseTimeout}`);
+    this.autoCloseTimer = window.setTimeout(
+      () => this.toggle(),
+      this.gate?.autoCloseTimeout
+    );
   }
 
   public toggle(): void {
-    console.log("start closing gates");
     window.clearTimeout(this.autoCloseTimer);
-    this.context?.transitionTo(new ClosingGate());
-    this.context?.timer?.initialize();
+    this.gate?.transitionTo(new ClosingGate());
   }
 }
 
 class OpeningGate extends GateState {
+  protected initialize(): void {
+    this.gate?.timer?.initialize(() => {
+      this.gate?.transitionTo(new OpenedGate());
+      this.timer?.reset();
+    });
+  }
+
   public toggle(): void {
-    console.log("Paused gate");
     this.timer?.pause();
-    this.context?.transitionTo(new PausedGate());
+    this.gate?.transitionTo(new PausedOpeningGate());
   }
 }
 
 class PausedGate extends GateState {
+  private autoCloseTimer: number | undefined;
+
+  protected initialize(): void {
+    console.log(`Gate closing in ${this.gate?.autoCloseTimeout}`);
+    this.autoCloseTimer = window.setTimeout(
+      () => this.toggle(),
+      this.gate?.autoCloseTimeout
+    );
+  }
+
+  toggle() {
+    // some logger logic
+  }
+
+  protected beforeToggle(): void {
+    window.clearTimeout(this.autoCloseTimer);
+  }
+}
+
+class PausedOpeningGate extends PausedGate {
   public toggle(): void {
-    if (this.context?.cachedDirection === "opening") {
-      console.log("now closing gate");
-      this.context?.transitionTo(new ClosingGate());
-      this.timer?.reverse();
-    } else if (this.context?.cachedDirection === "closing") {
-      console.log("now opening gate");
-      this.context?.transitionTo(new OpeningGate());
-      this.timer?.reverse();
-    }
+    super.beforeToggle();
+
+    this.gate?.transitionTo(new ClosingGate());
+    this.timer?.reverse();
+  }
+}
+class PausedClosingGate extends PausedGate {
+  public toggle(): void {
+    super.beforeToggle();
+
+    this.gate?.transitionTo(new OpeningGate());
+    this.timer?.reverse();
   }
 }
 
 class ClosingGate extends GateState {
-  public toggle(): void {
-    console.log("Paused gate");
-    this.timer?.pause();
-    this.context?.transitionTo(new PausedGate());
+  protected initialize(): void {
+    if (this.gate?.blocked) {
+      return this.openImmediately();
+    }
+
+    this.gate?.timer?.initialize(() => {
+      this.gate?.transitionTo(new ClosedGate());
+      this.timer?.reset();
+    });
   }
 
-  public openEmergency(): void {
+  public toggle(): void {
+    this.timer?.pause();
+    this.gate?.transitionTo(new PausedClosingGate());
+  }
+
+  public openImmediately(): void {
     this.timer?.pause();
     this.timer?.reverse();
-    this.context?.transitionTo(new OpeningGate());
+    this.gate?.transitionTo(new OpeningGate());
   }
 }
 
 class ClosedGate extends GateState {
   public toggle(): void {
-    console.log("start opening gates");
-    this.context?.transitionTo(new OpeningGate());
-    this.context?.timer?.initialize();
+    this.gate?.transitionTo(new OpeningGate());
+  }
+}
+
+class BlockedOpeningGate extends OpeningGate {
+  toggle(): void {
+    console.warn("Can't close with car detected!");
   }
 }
 
 class GateSensor implements Subject {
-  public isCarDetected: Boolean = false;
+  public isCarDetected: boolean = false;
 
   private observers: Observer[] = [];
 
@@ -219,7 +251,7 @@ class GateSensor implements Subject {
   public detach(observer: Observer): void {
     const observerIndex = this.observers.indexOf(observer);
     if (observerIndex === -1) {
-      return console.log("Subject: Nonexistent observer.");
+      return console.warn("Subject: Nonexistent observer.");
     }
 
     this.observers.splice(observerIndex, 1);
@@ -231,27 +263,30 @@ class GateSensor implements Subject {
     }
   }
 
-  public carArrived(): void {
+  public onCarArrived(): void {
     this.isCarDetected = true;
+    this.notify();
+  }
+
+  public onCarLeft(): void {
+    this.isCarDetected = false;
     this.notify();
   }
 }
 
 class GateSensorObserver implements Observer {
-  protected context: GateContext;
+  protected gate: Gate;
 
-  constructor(context: GateContext) {
-    this.context = context;
+  constructor(gate: Gate) {
+    this.gate = gate;
   }
 
   public update(sensor: GateSensor): void {
-    if (sensor.isCarDetected) {
-      this.context.openEmergency();
-    }
+    this.gate.blocked = sensor.isCarDetected;
   }
 }
 
-(window as any).gate = new GateContext(new ClosedGate());
+(window as any).gate = new Gate(new ClosedGate());
 (window as any).sensor = new GateSensor();
 
 (window as any).sensor.attach(new GateSensorObserver((window as any).gate));
