@@ -91,13 +91,14 @@ export class PausedGate extends GateState {
 
 export class PausedOpeningGate extends PausedGate {
   public toggle(): void {
-    super.cancelAutoClose();
+    this.cancelAutoClose();
 
     this.gate?.transitionTo(new ClosingGate());
     this.timer?.reverse();
   }
 
   public onCarArrived(): void {
+    this.cancelAutoClose();
     this.gate?.transitionTo(new OpeningBlockedGate());
   }
 
