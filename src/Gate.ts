@@ -1,6 +1,5 @@
 import Timer from "./Timer";
 import GateState from "./GateState";
-import EventManager from "./EventManager";
 
 export default class Gate {
   public timer: Timer | undefined;
@@ -10,17 +9,12 @@ export default class Gate {
   private _autoCloseTimeout: number;
   private _duration: number;
   private state: GateState | undefined;
-  private eventManager: EventManager = new EventManager();
 
   constructor(state: GateState) {
     this.transitionTo(state);
     this._duration = this.DEFAULT_MS_TIMEOUT;
     this._autoCloseTimeout = this.DEFAULT_MS_AUTOCLOSED;
     this.timer = new Timer(this._duration);
-  }
-
-  notify(eventType: string) {
-    this.eventManager.notify(eventType);
   }
 
   public set autoCloseTimeout(autoCloseTimeout: number) {
