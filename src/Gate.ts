@@ -39,12 +39,12 @@ export default class Gate {
   public get duration() {
     return this._duration;
   }
-  
-  public configureDuration(duration: number) {
+
+  public configureDuration(duration: number): void {
     this._duration = duration;
     this.timer?.configureInterval(this._duration);
   }
-  
+
   public transitionTo(state: GateState): void {
     console.log(
       `<------ Transition to ${(<any>state).constructor.name}. ------>`
@@ -53,16 +53,16 @@ export default class Gate {
     this.state?.setGate(this);
     this.state?.connectTimer(this.timer);
   }
-  
+
   public toggle(): void {
     this.state?.toggle();
   }
 
-  public onCarArrived() {
+  public onCarArrived(): void {
     this.state?.onCarArrived();
   }
 
-  public onCarLeft() {
+  public onCarLeft(): void {
     this.state?.onCarLeft();
   }
 }

@@ -26,16 +26,16 @@ export default class Timer {
     window.clearInterval(this.interval);
   }
 
-  reverse() {
+  reverse(): void {
     this.remaining = this.intervalTimeOut - this.remaining;
   }
 
-  pause() {
+  pause(): void {
     window.clearInterval(this.interval);
     this.interval = undefined;
   }
 
-  configureInterval(intervalTimeOut: number) {
+  configureInterval(intervalTimeOut: number): void {
     this.intervalTimeOut = intervalTimeOut;
     this.remaining = intervalTimeOut;
   }

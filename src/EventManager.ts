@@ -1,16 +1,17 @@
 import { Listener } from "./types";
 
 export default class EventManager {
-  private listeners: { [ key: string ]: Listener[] } = {};
+  private listeners: { [key: string]: Listener[] } = {};
 
-  public subscribe(eventType: string, handler: Function, context: any) {
+  public subscribe(eventType: string, handler: Function, context: any): void {
     this.listeners[eventType] = this.listeners[eventType] || [];
     this.listeners[eventType].push({ handler, context });
   }
 
-  public unsubscribe(eventType: string, handler: Function, context: any) {
+  public unsubscribe(eventType: string, handler: Function, context: any): void {
     const listenerIndex = this.listeners[eventType]?.findIndex(
-      (listener: Listener) => listener.handler === handler && listener.context === context
+      (listener: Listener) =>
+        listener.handler === handler && listener.context === context
     );
 
     if (listenerIndex > -1) {
@@ -18,11 +19,9 @@ export default class EventManager {
     }
   }
 
-  protected notify(eventType: string, data?: any) {
-    this.listeners[eventType]?.forEach(
-      (listener: Listener) => listener.handler.call(listener.context, data)
+  protected notify(eventType: string, data?: any): void {
+    this.listeners[eventType]?.forEach((listener: Listener) =>
+      listener.handler.call(listener.context, data)
     );
   }
 }
-
-  
