@@ -19,7 +19,7 @@ export default class EventManager {
     }
   }
 
-  protected notify(eventType: string, data?: any): void {
+  public notify(eventType: string, data?: any): void {
     this.listeners[eventType]?.forEach((listener: Listener) =>
       listener.handler.call(listener.context, data)
     );

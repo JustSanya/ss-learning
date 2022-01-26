@@ -1,7 +1,7 @@
 import Timer from "./Timer";
 import GateState from "./GateState";
 import CarSensor from "./CarSensor";
-// import EventManager from "./EventManager";
+import EventManager from "./EventManager";
 
 // enum EventsList {
 //   CLOSED = "GATE_CLOSED",
@@ -12,14 +12,14 @@ import CarSensor from "./CarSensor";
 //   CLOSING = "GATE_CLOSING",
 // }
 
-// const MessageMap = {
-//   [EventsList.CLOSED]: "Gate was closed",
-//   [EventsList.OPENED]: "Gate was opened",
-//   [EventsList.OPENING_PAUSED]: "Gate was paused while opening",
-//   [EventsList.CLOSING_PAUSED]: "Gate was pasued while closing",
-//   [EventsList.OPENING]: "Gate is opening",
-//   [EventsList.CLOSING]: "Gate is closing",
-// };
+const MessageMap = {
+  CLOSED: "Gate was closed",
+  OPENED: "Gate was opened",
+  OPENING_PAUSED: "Gate was paused while opening",
+  CLOSING_PAUSED: "Gate was pasued while closing",
+  OPENING: "Gate is opening",
+  CLOSING: "Gate is closing",
+};
 
 export default class Gate {
   public timer: Timer | undefined;
@@ -29,7 +29,7 @@ export default class Gate {
   private _autoCloseTimeout: number;
   private _duration: number;
   private state: GateState | undefined;
-  // private eventManager: EventManager = new EventManager();
+  private eventManager: EventManager = new EventManager();
   // private events: EventsList;
 
   constructor(state: GateState) {
@@ -40,9 +40,13 @@ export default class Gate {
     // this.eventManager.registerAllEvents(this.events);
   }
 
-  // public subscribe(events: EventsList[]) {
-  //   this.eventManager.subscribe(events);
-  // }
+  public subscribe(eventType: string, handler: Function, context: any) {
+    this.eventManager.subscribe(eventType, handler, context);
+  }
+
+  notify(eventType: string) {
+    this.eventManager.notify(eventType);
+  }
 
   public connectCarSensor(carSensor: CarSensor): void {
     carSensor.subscribe("carArrived", this.onCarArrived, this);
