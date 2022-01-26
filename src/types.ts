@@ -1,7 +1,3 @@
-export type Listener = {
-  handler: Function;
-  context: any;
-};
 export interface Observer {
   update(eventType: string, data: any): void;
 }
