@@ -1,5 +1,6 @@
 import Timer from "./Timer";
 import Gate from "./Gate";
+import { gateEvents } from "./types";
 
 export default abstract class GateState {
   protected gate: Gate | undefined;
@@ -25,6 +26,7 @@ export class OpenedGate extends GateState {
   private autoCloseTimer: number | undefined;
 
   protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_OPENED);
     console.log(`Gate closing in ${this.gate?.autoCloseTimeout}`);
     this.autoCloseTimer = window.setTimeout(
       () => this.toggle(),
@@ -47,6 +49,8 @@ export class OpenedGate extends GateState {
 
 export class OpeningGate extends GateState {
   protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_OPENING);
+
     this.gate?.timer?.initialize(() => {
       this.gate?.transitionTo(new OpenedGate());
       this.timer?.reset();
@@ -70,6 +74,8 @@ export class PausedGate extends GateState {
   private autoCloseTimer: number | undefined;
 
   protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_PAUSED);
+
     console.log(`Gate closing in ${this.gate?.autoCloseTimeout}`);
     this.autoCloseTimer = window.setTimeout(
       () => this.toggle(),
@@ -123,6 +129,8 @@ export class PausedClosingGate extends PausedGate {
 
 export class ClosingGate extends GateState {
   protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_CLOSING);
+
     this.gate?.timer?.initialize(() => {
       this.gate?.transitionTo(new ClosedGate());
       this.timer?.reset();
@@ -144,6 +152,10 @@ export class ClosingGate extends GateState {
 }
 
 export class ClosedGate extends GateState {
+  protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_CLOSED);
+  }
+
   public toggle(): void {
     this.gate?.transitionTo(new OpeningGate());
   }

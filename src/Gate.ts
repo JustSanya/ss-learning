@@ -1,5 +1,7 @@
 import Timer from "./Timer";
 import GateState from "./GateState";
+import EventManager from "./EventManager";
+import { messageMap, gateEvents, Observer } from "./types";
 
 export default class Gate {
   public timer: Timer | undefined;
@@ -9,6 +11,7 @@ export default class Gate {
   private _autoCloseTimeout: number;
   private _duration: number;
   private state: GateState | undefined;
+  private eventManager = new EventManager();
 
   constructor(state: GateState) {
     this.transitionTo(state);
@@ -50,6 +53,16 @@ export default class Gate {
 
   public toggle(): void {
     this.state?.toggle();
+  }
+
+  public notify(eventType: gateEvents): void {
+    const message = messageMap[eventType];
+
+    this.eventManager.notify(eventType, message);
+  }
+
+  public subscribe(observer: Observer) {
+    this.eventManager.subscribe(observer);
   }
 
   public onCarArrived(): void {
