@@ -1,4 +1,4 @@
-import CarSensor from "./CarSensor";
+import CarSensor from "../src/CarSensor";
 
 test("should notify about car arriving", () => {
   const carSensor = new CarSensor();
