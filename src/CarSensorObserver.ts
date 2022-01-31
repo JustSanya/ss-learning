@@ -11,8 +11,8 @@ export default class CarSensorObserver implements Observer {
     this.gate = gate;
   }
 
-  public update(eventType: string, message: string): void {
+  public update(eventType: string): void {
     this.gate[this.EVENT_MAP[eventType]] &&
-      this.gate[this.EVENT_MAP[eventType]](message);
+      this.gate[this.EVENT_MAP[eventType]]();
   }
 }
