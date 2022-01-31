@@ -1,5 +1,4 @@
 import Gate from "../src/Gate";
-// import Timer from "../src/Timer";
 import { ClosedGate, OpenedGate } from "../src/GateState";
 jest.mock("../src/GateState");
 
