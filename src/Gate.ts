@@ -13,7 +13,8 @@ export default class Gate {
   private state: GateState | undefined;
   private eventManager = new EventManager();
 
-  constructor(state: GateState) {
+  constructor(state: GateState, logger: Observer) {
+    this.subscribe(logger);
     this.transitionTo(state);
     this._duration = this.DEFAULT_MS_TIMEOUT;
     this._autoCloseTimeout = this.DEFAULT_MS_AUTOCLOSED;
@@ -43,9 +44,9 @@ export default class Gate {
   }
 
   public transitionTo(state: GateState): void {
-    console.log(
-      `<------ Transition to ${(<any>state).constructor.name}. ------>`
-    );
+    // console.log(
+    //   `<------ Transition to ${(<any>state).constructor.name}. ------>`
+    // );
     this.state = state;
     this.state?.setGate(this);
     this.state?.connectTimer(this.timer);

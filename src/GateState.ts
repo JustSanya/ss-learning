@@ -168,6 +168,9 @@ export class ClosedGate extends GateState {
 }
 
 export class OpenedBlockedGate extends GateState {
+  protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_OPENED_BLOCKED);
+  }
   public toggle(): void {
     console.warn("Can't close with car detected!");
   }
@@ -181,6 +184,7 @@ export class OpenedBlockedGate extends GateState {
 
 export class OpeningBlockedGate extends GateState {
   protected initialize(): void {
+    this.gate?.notify(gateEvents.GATE_OPENING_BLOCKED);
     this.gate?.timer?.initialize(() => {
       this.gate?.transitionTo(new OpenedBlockedGate());
       this.timer?.reset();
