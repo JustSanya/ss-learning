@@ -1,11 +1,13 @@
 import Gate from "../src/Gate";
+import GateLogger from "../src/GateLogger";
 import { ClosedGate, OpenedGate } from "../src/GateState";
 jest.mock("../src/GateState");
+jest.mock("../src/GateLogger");
 
 test("should set context for gate state", () => {
   const state = new ClosedGate();
   const newState = new OpenedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   gate.transitionTo(newState);
 
@@ -14,7 +16,7 @@ test("should set context for gate state", () => {
 
 test("should toggle state", () => {
   const state = new ClosedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   gate.toggle();
 
@@ -23,7 +25,7 @@ test("should toggle state", () => {
 
 test("should notify state on car arrived", () => {
   const state = new ClosedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   gate.onCarArrived();
 
@@ -32,7 +34,7 @@ test("should notify state on car arrived", () => {
 
 test("should notify state on car left", () => {
   const state = new ClosedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   gate.onCarLeft();
 

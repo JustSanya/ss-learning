@@ -1,11 +1,13 @@
 import CarSensor from "../src/CarSensor";
-
 import CarSensorObserver from "../src/CarSensorObserver";
 import Gate from "../src/Gate";
+import GateLogger from "../src/GateLogger";
 import { ClosedGate } from "../src/GateState";
+
 jest.mock("../src/GateState");
 jest.mock("../src/Gate");
 jest.mock("../src/CarSensorObserver");
+jest.mock("../src/GateLogger");
 
 test("should notify about car arriving", () => {
   const carSensor = new CarSensor();
@@ -28,8 +30,12 @@ test("should notify about car leaving", () => {
 test("should register observers", () => {
   const carSensor = new CarSensor();
 
-  const observer1 = new CarSensorObserver(new Gate(new ClosedGate()));
-  const observer2 = new CarSensorObserver(new Gate(new ClosedGate()));
+  const observer1 = new CarSensorObserver(
+    new Gate(new ClosedGate(), new GateLogger())
+  );
+  const observer2 = new CarSensorObserver(
+    new Gate(new ClosedGate(), new GateLogger())
+  );
 
   carSensor.subscribe(observer1);
   carSensor.subscribe(observer2);
@@ -40,8 +46,12 @@ test("should register observers", () => {
 test("should unregister observers", () => {
   const carSensor = new CarSensor();
 
-  const observer1 = new CarSensorObserver(new Gate(new ClosedGate()));
-  const observer2 = new CarSensorObserver(new Gate(new ClosedGate()));
+  const observer1 = new CarSensorObserver(
+    new Gate(new ClosedGate(), new GateLogger())
+  );
+  const observer2 = new CarSensorObserver(
+    new Gate(new ClosedGate(), new GateLogger())
+  );
 
   carSensor.subscribe(observer1);
   carSensor.subscribe(observer2);
@@ -55,7 +65,9 @@ test("should unregister observers", () => {
 test("should not add same observer twice", () => {
   const carSensor = new CarSensor();
 
-  const observer1 = new CarSensorObserver(new Gate(new ClosedGate()));
+  const observer1 = new CarSensorObserver(
+    new Gate(new ClosedGate(), new GateLogger())
+  );
 
   carSensor.subscribe(observer1);
   carSensor.subscribe(observer1);
@@ -65,7 +77,9 @@ test("should not add same observer twice", () => {
 
 test("sould call update on observer", () => {
   const carSensor = new CarSensor();
-  const observer1 = new CarSensorObserver(new Gate(new ClosedGate()));
+  const observer1 = new CarSensorObserver(
+    new Gate(new ClosedGate(), new GateLogger())
+  );
   const spy = jest.spyOn(observer1, "update");
 
   carSensor.subscribe(observer1);

@@ -10,11 +10,13 @@ import {
 } from "../src/GateState";
 
 import Gate from "../src/Gate";
+import GateLogger from "../src/GateLogger";
 jest.mock("../src/Gate");
+jest.mock("../src/GateLogger");
 
 test("should switch OpenedGate to ClosingGate on toggle", () => {
   const state = new OpenedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -24,7 +26,7 @@ test("should switch OpenedGate to ClosingGate on toggle", () => {
 
 test("should switch OpenedGate to OpenedBlockedGate on car arrived", () => {
   const state = new OpenedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarArrived();
@@ -34,7 +36,7 @@ test("should switch OpenedGate to OpenedBlockedGate on car arrived", () => {
 
 test("should switch OpeningGate to PausedOpeningGate on toggle", () => {
   const state = new OpeningGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -44,7 +46,7 @@ test("should switch OpeningGate to PausedOpeningGate on toggle", () => {
 
 test("should switch OpenedGate to OpeningBlockedGate on car arrived", () => {
   const state = new OpeningGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarArrived();
@@ -54,7 +56,7 @@ test("should switch OpenedGate to OpeningBlockedGate on car arrived", () => {
 
 test("should switch PausedOpeningGate to ClosingGate on toggle", () => {
   const state = new PausedOpeningGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -64,7 +66,7 @@ test("should switch PausedOpeningGate to ClosingGate on toggle", () => {
 
 test("should switch PausedOpeningGate to OpeningBlockedGate on car arrived", () => {
   const state = new PausedOpeningGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarArrived();
@@ -74,7 +76,7 @@ test("should switch PausedOpeningGate to OpeningBlockedGate on car arrived", () 
 
 test("should switch PausedClosingGate to OpeningGate on toggle", () => {
   const state = new PausedClosingGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -84,7 +86,7 @@ test("should switch PausedClosingGate to OpeningGate on toggle", () => {
 
 test("should switch PausedClosingGate to OpeningBlockedGate on car arrived", () => {
   const state = new PausedClosingGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarArrived();
@@ -94,7 +96,7 @@ test("should switch PausedClosingGate to OpeningBlockedGate on car arrived", () 
 
 test("should switch ClosingGate to PausedClosingGate on toggle", () => {
   const state = new ClosingGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -104,7 +106,7 @@ test("should switch ClosingGate to PausedClosingGate on toggle", () => {
 
 test("should switch ClosingGate to OpeningBlockedGate on car arrived", () => {
   const state = new ClosingGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarArrived();
@@ -114,7 +116,7 @@ test("should switch ClosingGate to OpeningBlockedGate on car arrived", () => {
 
 test("should switch ClosedGate to OpeningGate on toggle", () => {
   const state = new ClosedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -124,7 +126,7 @@ test("should switch ClosedGate to OpeningGate on toggle", () => {
 
 test("should switch ClosedGate to OpeningBlockedGate on car arrived", () => {
   const state = new ClosedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarArrived();
@@ -134,7 +136,7 @@ test("should switch ClosedGate to OpeningBlockedGate on car arrived", () => {
 
 test("should NOT switch OpenedBlockedGate on toggle", () => {
   const state = new OpenedBlockedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -144,7 +146,7 @@ test("should NOT switch OpenedBlockedGate on toggle", () => {
 
 test("should switch OpenedBlockedGate to OpenedGate on car left", () => {
   const state = new OpenedBlockedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarLeft();
@@ -154,7 +156,7 @@ test("should switch OpenedBlockedGate to OpenedGate on car left", () => {
 
 test("should NOT switch OpeningBlockedGate on toggle", () => {
   const state = new OpeningBlockedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.toggle();
@@ -164,7 +166,7 @@ test("should NOT switch OpeningBlockedGate on toggle", () => {
 
 test("should switch OpeningBlockedGate to OpeningGate on car left", () => {
   const state = new OpeningBlockedGate();
-  const gate = new Gate(state);
+  const gate = new Gate(state, new GateLogger());
 
   state.setGate(gate);
   state.onCarLeft();
