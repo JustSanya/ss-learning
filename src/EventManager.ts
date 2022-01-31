@@ -1,6 +1,6 @@
 import { Observer } from "./types";
 export default class EventManager {
-  private observers: Observer[] = [];
+  protected observers: Observer[] = [];
 
   public subscribe(observer: Observer): void {
     const isExist = this.observers.includes(observer);
@@ -10,7 +10,7 @@ export default class EventManager {
     this.observers.push(observer);
   }
 
-  public ubsubscribe(observer: Observer): void {
+  public unsubscribe(observer: Observer): void {
     const observerIndex = this.observers.indexOf(observer);
     if (observerIndex === -1) {
       return console.log("Subject: Nonexistent observer.");
