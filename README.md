@@ -1,13 +1,25 @@
-# How to
+# testing-vue
 
-Use following to get started
+## Project setup
 
 ```
-npm start
+npm install
 ```
 
-# Tech debt so far
+### Compiles and hot-reloads for development
 
-It seems that state pattern doesn't fit too well or is wrongly implemented - requires further research.
+```
+npm run serve
+```
 
-Parts of the system seem to be over interdependant
+### Compiles and minifies for production
+
+```
+npm run build
+```
+
+### Run your unit tests
+
+```
+npm run test:unit
+```
