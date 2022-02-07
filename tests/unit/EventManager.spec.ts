@@ -1,5 +1,5 @@
-import EventManager from "../src/EventManager";
-import { Observer } from "../src/types";
+import EventManager from "../../src/logic/EventManager";
+import { Observer } from "../../src/logic/types";
 
 class MockObserver implements Observer {
   update() {

@@ -7,12 +7,12 @@ import {
   OpeningBlockedGate,
   PausedOpeningGate,
   PausedClosingGate,
-} from "../src/GateState";
+} from "../../src/logic/GateState";
 
-import Gate from "../src/Gate";
-import GateLogger from "../src/GateLogger";
-jest.mock("../src/Gate");
-jest.mock("../src/GateLogger");
+import Gate from "../../src/logic/Gate";
+import GateLogger from "../../src/logic/GateLogger";
+jest.mock("../../src/logic/Gate");
+jest.mock("../../src/logic/GateLogger");
 
 test("should switch OpenedGate to ClosingGate on toggle", () => {
   const state = new OpenedGate();

@@ -1,8 +1,8 @@
-import Gate from "../src/Gate";
-import GateLogger from "../src/GateLogger";
-import { ClosedGate, OpenedGate } from "../src/GateState";
-jest.mock("../src/GateState");
-jest.mock("../src/GateLogger");
+import Gate from "../../src/logic/Gate";
+import GateLogger from "../../src/logic/GateLogger";
+import { ClosedGate, OpenedGate } from "../../src/logic/GateState";
+jest.mock("../../src/logic/GateState");
+jest.mock("../../src/logic/GateLogger");
 
 test("should set context for gate state", () => {
   const state = new ClosedGate();

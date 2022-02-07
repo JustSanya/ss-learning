@@ -1,4 +1,4 @@
-import CarSensor from "../src/CarSensor";
+import CarSensor from "../../src/logic/CarSensor";
 describe("car sensor", () => {
   it("should notify about car arriving", () => {
     const carSensor = new CarSensor();
