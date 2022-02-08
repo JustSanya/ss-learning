@@ -12,7 +12,7 @@
     <input v-model.lazy="gateSystem.gate.duration"/>
   </label>
   <section class="currentAction">
-    <span>Gate's current action:</span><br/>
+    <span>Gate's current state:</span><br/>
     <span>{{ logs[logs.length - 1] }}</span>
   </section>
 </section>

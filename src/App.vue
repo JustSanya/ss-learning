@@ -1,14 +1,14 @@
 <template>
 <div class="widgets">
-  <h2>Widget 1</h2>
+  <h2>Widget 1 (button)</h2>
   <gate-button-widget :gateSystem="gateSystem"/>
   <hr/>
 
-  <h2>Widget 2</h2>
+  <h2>Widget 2 (iPhone)</h2>
   <i-phone-widget :gateSystem="gateSystem"/>
   <hr/>
 
-  <h2>Widget 3</h2>
+  <h2>Widget 3 (car sensor)</h2>
   <car-sensor-widget :gateSystem="gateSystem"/>
 </div>
 </template>
