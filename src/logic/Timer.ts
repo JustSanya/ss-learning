@@ -10,13 +10,13 @@ export default class Timer {
     this.remaining = this.intervalTimeOut;
   }
 
-  initialize(callback: Function): void {
+  initialize(finishCallback: Function, inProgressCallback: Function): void {
     this.interval = window.setInterval(() => {
       if (this.remaining > 0) {
         this.remaining -= this.DEFAULT_MS_STEP;
-        console.log(`Time remaining: ${this.remaining}`);
+        inProgressCallback(this.remaining);
       } else {
-        callback();
+        finishCallback();
       }
     }, this.DEFAULT_MS_STEP);
   }

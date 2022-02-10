@@ -20,7 +20,7 @@
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
-    "@vue/test-utils": "^2.0.0-0",
+    "@vue/test-utils": "^2.0.0-rc.17",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.2",
     "typescript": "~4.1.5",
@@ -36,6 +36,8 @@
     "transform": {
       "^.+\\.vue$": "vue-jest"
     },
-    "roots": ["<rootDir>/tests/unit/"]
+    "roots": [
+      "<rootDir>/tests/unit/"
+    ]
   }
 }

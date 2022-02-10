@@ -51,10 +51,15 @@ export class OpeningGate extends GateState {
   protected initialize(): void {
     this.gate?.notify(gateEvents.GATE_OPENING);
 
-    this.gate?.timer?.initialize(() => {
-      this.gate?.transitionTo(new OpenedGate());
-      this.timer?.reset();
-    });
+    this.gate?.timer?.initialize(
+      () => {
+        this.gate?.transitionTo(new OpenedGate());
+        this.timer?.reset();
+      },
+      (timeRemaining: number) => {
+        this.gate?.notify(gateEvents.TIME_REMAINING, timeRemaining);
+      }
+    );
   }
 
   public toggle(): void {
@@ -131,10 +136,15 @@ export class ClosingGate extends GateState {
   protected initialize(): void {
     this.gate?.notify(gateEvents.GATE_CLOSING);
 
-    this.gate?.timer?.initialize(() => {
-      this.gate?.transitionTo(new ClosedGate());
-      this.timer?.reset();
-    });
+    this.gate?.timer?.initialize(
+      () => {
+        this.gate?.transitionTo(new ClosedGate());
+        this.timer?.reset();
+      },
+      (timeRemaining: number) => {
+        this.gate?.notify(gateEvents.TIME_REMAINING, timeRemaining);
+      }
+    );
   }
 
   public toggle(): void {
@@ -185,10 +195,15 @@ export class OpenedBlockedGate extends GateState {
 export class OpeningBlockedGate extends GateState {
   protected initialize(): void {
     this.gate?.notify(gateEvents.GATE_OPENING_BLOCKED);
-    this.gate?.timer?.initialize(() => {
-      this.gate?.transitionTo(new OpenedBlockedGate());
-      this.timer?.reset();
-    });
+    this.gate?.timer?.initialize(
+      () => {
+        this.gate?.transitionTo(new OpenedBlockedGate());
+        this.timer?.reset();
+      },
+      (timeRemaining: number) => {
+        this.gate?.notify(gateEvents.TIME_REMAINING, timeRemaining);
+      }
+    );
   }
 
   public toggle(): void {

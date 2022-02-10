@@ -16,6 +16,7 @@ export enum gateEvents {
   GATE_OPENING = "GATE_OPENING",
   GATE_OPENING_BLOCKED = "GATE_OPENING_BLOCKED",
   GATE_PAUSED = "GATE_PAUSED",
+  TIME_REMAINING = "TIME_REMAINING",
 }
 
 export const messageMap = {
@@ -28,4 +29,5 @@ export const messageMap = {
   [gateEvents.GATE_OPENING_BLOCKED]:
     "Car is detected, gate opening, wait till car leaves",
   [gateEvents.GATE_PAUSED]: "Gate has been put on hold",
+  [gateEvents.TIME_REMAINING]: "Time remaining: ",
 };

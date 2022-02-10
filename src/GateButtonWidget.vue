@@ -1,5 +1,7 @@
 <template>
-<button @click="toggleGate">Toggle Gate</button>
+<div>
+  <button @click="toggleGate">Toggle Gate</button><br>
+</div>
 </template>
 
 <script lang="ts">

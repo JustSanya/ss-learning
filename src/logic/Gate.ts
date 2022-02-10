@@ -1,7 +1,7 @@
 import Timer from "./Timer";
 import GateState from "./GateState";
 import EventManager from "./EventManager";
-import { messageMap, gateEvents, Observer } from "./types";
+import { gateEvents, Observer } from "./types";
 
 export default class Gate {
   public timer: Timer | undefined;
@@ -44,9 +44,6 @@ export default class Gate {
   }
 
   public transitionTo(state: GateState): void {
-    // console.log(
-    //   `<------ Transition to ${(<any>state).constructor.name}. ------>`
-    // );
     this.state = state;
     this.state?.setGate(this);
     this.state?.connectTimer(this.timer);
@@ -56,10 +53,8 @@ export default class Gate {
     this.state?.toggle();
   }
 
-  public notify(eventType: gateEvents): void {
-    const message = messageMap[eventType];
-
-    this.eventManager.notify(eventType, message);
+  public notify(eventType: gateEvents, payload?: any): void {
+    this.eventManager.notify(eventType, payload);
   }
 
   public subscribe(observer: Observer) {
