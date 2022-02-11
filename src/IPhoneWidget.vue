@@ -6,14 +6,14 @@
     <p v-for="(log, index) in logs" :key="index">{{ log }}</p>
   </section>
   <label class="autoCloseTimeout">Auto close timeout<br/>
-    <input v-model.lazy="gateSystem.gate.autoCloseTimeout"/>
+    <input type="number" v-model.lazy="gateSystem.gate.autoCloseTimeout"/>
   </label>
-  <label class="autoCloseTimeout">Duration<br/>
-    <input v-model.lazy="gateSystem.gate.duration"/>
+  <label class="duration">Duration<br/>
+    <input type="number" v-model.lazy="gateSystem.gate.duration"/>
   </label>
-  <section class="currentAction">
+  <section class="currentStateContainer">
     <span>Gate's current state:</span><br/>
-    <span>{{ logs[logs.length - 1] }}</span>
+    <span class="currentState">{{ logs[logs.length - 1] }}</span>
   </section>
 </section>
 </template>
