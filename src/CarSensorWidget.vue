@@ -6,7 +6,7 @@
     @dragstart="onDragStart"
     @dragend="onDragEnd"
     :style="carPositionPx"
-  >Car</div>
+  ></div>
   <section class="preParkingLineArea arrivingArea">Pre-parking</section>
   <section class="parkingLineArea arrivingArea">Gate</section>
   <section class="afterParkingLineArea">After-parking</section>
@@ -91,11 +91,12 @@ export default defineComponent({
     position: absolute;
     height: 50px;
     width: 100px;
-    background: grey;
+    background: url('./assets/img/car.jpg') #fff no-repeat center/contain;
     color: white;
     text-align: center;
     line-height: 50px;
     cursor: pointer;
+    border: 1px solid red;
   }
 
   .preParkingLineArea {
