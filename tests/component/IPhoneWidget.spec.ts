@@ -64,5 +64,5 @@ test("should show current gate state", async () => {
   componentWrapper.props("gateSystem").logs.push("test log 2");
   await componentWrapper.vm.$nextTick();
 
-  expect(componentWrapper.findAll(".logs p")[1].text()).toEqual(gateSystemMock.logs[1]);
+  expect(componentWrapper.find(".currentState").text()).toEqual(gateSystemMock.logs[1]);
 });
