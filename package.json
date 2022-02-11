@@ -36,8 +36,10 @@
     "transform": {
       "^.+\\.vue$": "vue-jest"
     },
-    "roots": [
-      "<rootDir>/tests/unit/"
+    "roots": ["<rootDir>/tests"],
+    "testMatch": [
+      "<rootDir>/tests/unit/**/*.spec.(js|jsx|ts|tsx)",
+      "<rootDir>/tests/component/**/*.spec.(js|jsx|ts|tsx)"
     ]
   }
 }
